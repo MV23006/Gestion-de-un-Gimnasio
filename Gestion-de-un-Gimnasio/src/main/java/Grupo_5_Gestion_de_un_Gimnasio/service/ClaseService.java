@@ -24,7 +24,7 @@ public class ClaseService {
 
     public List<ClaseResponseDTO> obtenerTodas() {
         return claseRepository.findAll().stream()
-                .map(this::convertirAResponseDTO)
+                .map(this::converterAResponseDTO)
                 .collect(Collectors.toList());
     }
 
@@ -41,7 +41,7 @@ public class ClaseService {
         }
 
         Clase guardada = claseRepository.save(clase);
-        return convertirAResponseDTO(guardada);
+        return converterAResponseDTO(guardada);
     }
 
     public ClaseResponseDTO actualizar(Long id, ClaseRequestDTO dto) {
@@ -58,21 +58,21 @@ public class ClaseService {
             clase.setEntrenador(entrenador);
         }
 
-        return convertirAResponseDTO(claseRepository.save(clase));
+        return converterAResponseDTO(claseRepository.save(clase));
     }
 
     public void eliminar(Long id) {
         claseRepository.deleteById(id);
     }
 
-    private ClaseResponseDTO convertirAResponseDTO(Clase c) {
+    private ClaseResponseDTO converterAResponseDTO(Clase c) {
         ClaseResponseDTO dto = new ClaseResponseDTO();
         dto.setId(c.getId());
         dto.setNombre(c.getNombre());
         dto.setHorario(c.getHorario());
         dto.setCupoMaximo(c.getCupoMaximo());
         if (c.getEntrenador() != null) {
-            dto.setNombreEntrenador(c.getEntrenador().getNombre());
+            dto.setNombreEntrenador((String) c.getEntrenador().getNombre());
         }
         return dto;
     }

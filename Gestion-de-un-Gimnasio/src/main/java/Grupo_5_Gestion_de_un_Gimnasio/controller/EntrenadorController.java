@@ -1,39 +1,53 @@
 package Grupo_5_Gestion_de_un_Gimnasio.controller;
 
-import Grupo_5_Gestion_de_un_Gimnasio.dto.EntrenadorRequestDTO;
-import Grupo_5_Gestion_de_un_Gimnasio.dto.EntrenadorResponseDTO;
-import Grupo_5_Gestion_de_un_Gimnasio.service.EntrenadorService;
+import Grupo_5_Gestion_de_un_Gimnasio.model.Entrenador;
+import Grupo_5_Gestion_de_un_Gimnasio.repository.EntrenadorRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/entrenadores")
+@RequestMapping("/api/entrenadores")
 public class EntrenadorController {
 
-    private final EntrenadorService entrenadorService;
-
-    public EntrenadorController(EntrenadorService entrenadorService) {
-        this.entrenadorService = entrenadorService;
-    }
+    @Autowired
+    private EntrenadorRepository entrenadorRepository;
 
     @GetMapping
-    public List<EntrenadorResponseDTO> listar() {
-        return entrenadorService.obtenerTodos();
+    public List<Entrenador> obtenerTodos() {
+        return entrenadorRepository.findAll();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Entrenador> obtenerPorId(@PathVariable Long id) {
+        return entrenadorRepository.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public EntrenadorResponseDTO crear(@RequestBody EntrenadorRequestDTO dto) {
-        return entrenadorService.guardar(dto);
+    public Entrenador crearEntrenador(@RequestBody Entrenador entrenador) {
+        return entrenadorRepository.save(entrenador);
     }
 
     @PutMapping("/{id}")
-    public EntrenadorResponseDTO actualizar(@PathVariable Long id, @RequestBody EntrenadorRequestDTO dto) {
-        return entrenadorService.actualizar(id, dto);
+    public ResponseEntity<Entrenador> actualizarEntrenador(@PathVariable Long id, @RequestBody Entrenador detalles) {
+        return entrenadorRepository.findById(id).map(entrenador -> {
+            entrenador.setNombre(detalles.getNombre());
+            entrenador.setApellido(detalles.getApellido());
+            entrenador.setEspecialidad(detalles.getEspecialidad());
+            entrenador.setEmail(detalles.getEmail());
+            return ResponseEntity.ok(entrenadorRepository.save(entrenador));
+        }).orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
-    public void eliminar(@PathVariable Long id) {
-        entrenadorService.eliminar(id);
+    public ResponseEntity<Void> eliminarEntrenador(@PathVariable Long id) {
+        if (entrenadorRepository.existsById(id)) {
+            entrenadorRepository.deleteById(id);
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
     }
 }

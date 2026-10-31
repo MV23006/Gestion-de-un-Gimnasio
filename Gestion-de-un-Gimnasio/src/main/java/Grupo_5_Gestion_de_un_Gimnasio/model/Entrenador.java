@@ -1,7 +1,9 @@
 package Grupo_5_Gestion_de_un_Gimnasio.model;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "entrenadores")
@@ -14,9 +16,8 @@ public class Entrenador {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
     private String nombre;
-
-    @Column(nullable = false)
-    private String especialidad; // Ej: Yoga, Funcional, Crossfit
+    private String apellido;
+    private String especialidad;
+    private String email;
 }

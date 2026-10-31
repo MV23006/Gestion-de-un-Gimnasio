@@ -1,39 +1,55 @@
 package Grupo_5_Gestion_de_un_Gimnasio.controller;
 
-import Grupo_5_Gestion_de_un_Gimnasio.dto.ClaseRequestDTO;
-import Grupo_5_Gestion_de_un_Gimnasio.dto.ClaseResponseDTO;
-import Grupo_5_Gestion_de_un_Gimnasio.service.ClaseService;
+import Grupo_5_Gestion_de_un_Gimnasio.model.Clase;
+import Grupo_5_Gestion_de_un_Gimnasio.repository.ClaseRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/clases")
+@RequestMapping("/api/clases")
 public class ClaseController {
 
-    private final ClaseService claseService;
-
-    public ClaseController(ClaseService claseService) {
-        this.claseService = claseService;
-    }
+    @Autowired
+    private ClaseRepository claseRepository;
 
     @GetMapping
-    public List<ClaseResponseDTO> listar() {
-        return claseService.obtenerTodas();
+    public List<Clase> obtenerTodas() {
+        return claseRepository.findAll();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Clase> obtenerPorId(@PathVariable Long id) {
+        return claseRepository.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ClaseResponseDTO crear(@RequestBody ClaseRequestDTO dto) {
-        return claseService.guardar(dto);
+    public Clase crearClase(@RequestBody Clase clase) {
+        return claseRepository.save(clase);
     }
 
     @PutMapping("/{id}")
-    public ClaseResponseDTO actualizar(@PathVariable Long id, @RequestBody ClaseRequestDTO dto) {
-        return claseService.actualizar(id, dto);
+    public ResponseEntity<Clase> actualizarClase(@PathVariable Long id, @RequestBody Clase detalles) {
+        return claseRepository.findById(id).map(clase -> {
+            clase.setNombre(detalles.getNombre());
+            clase.setDescripcion(detalles.getDescripcion());
+            clase.setCupoMaximo(detalles.getCupoMaximo());
+            clase.setHorario(detalles.getHorario());
+            clase.setEntrenador(detalles.getEntrenador());
+            return ResponseEntity.ok(claseRepository.save(clase));
+        }).orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
-    public void eliminar(@PathVariable Long id) {
-        claseService.eliminar(id);
+    public ResponseEntity<Void> eliminarClase(@PathVariable Long id) {
+        if (claseRepository.existsById(id)) {
+            claseRepository.deleteById(id);
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
     }
 }

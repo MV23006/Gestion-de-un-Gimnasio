@@ -27,4 +27,5 @@ public class Inscripcion {
     private LocalDateTime fechaInscripcion = LocalDateTime.now();
 
     private Boolean asistio = false;
+
 }

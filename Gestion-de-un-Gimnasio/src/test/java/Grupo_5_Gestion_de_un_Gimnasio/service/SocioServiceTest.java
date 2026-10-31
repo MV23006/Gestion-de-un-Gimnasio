@@ -28,9 +28,10 @@ class SocioServiceTest {
 
     @Test
     void guardarSocioExitosamente() {
-        SocioRequestDTO dto = new SocioRequestDTO();
         Socio socio = new Socio();
         socio.setId(1L);
+
+        SocioRequestDTO dto = new SocioRequestDTO();
 
         when(socioRepository.save(any(Socio.class))).thenReturn(socio);
 
@@ -47,7 +48,7 @@ class SocioServiceTest {
 
         when(socioRepository.findById(1L)).thenReturn(Optional.of(socio));
 
-        SocioResponseDTO respuesta = socioService.obtenerPorId(1L);
+        Optional<SocioResponseDTO> respuesta = socioService.obtenerPorId(1L);
 
         assertNotNull(respuesta);
         verify(socioRepository, times(1)).findById(1L);

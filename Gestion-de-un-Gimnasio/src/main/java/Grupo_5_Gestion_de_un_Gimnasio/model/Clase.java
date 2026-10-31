@@ -25,4 +25,12 @@ public class Clase {
     @ManyToOne
     @JoinColumn(name = "entrenador_id")
     private Entrenador entrenador;
+
+    public Object getDescripcion() {
+        return null;
+    }
+
+    public void setDescripcion(Object descripcion) {
+
+    }
 }
